@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.0/p5.min.js"></script>
+</head>
+<body>
+<script>
+let vertices = ["A","B","C","D","E"];
+let edges = [["A","C"],["B","D"],["C","E"],["D","E"]];
+
+let positions = {};
+let visitados = new Set();
+let ordemDFS = [];
+let passo = 0;
+let intervalo = 60; // frames entre passos (~1 seg)
+
+function setup() {
+  createCanvas(500, 500);
+  let angleStep = TWO_PI / vertices.length;
+  for (let i = 0; i < vertices.length; i++) {
+    let angle = i * angleStep;
+    positions[vertices[i]] = createVector(
+      width/2 + 150 * cos(angle),
+      height/2 + 150 * sin(angle)
+    );
+  }
+  // Pré-calcula ordem DFS
+  dfs("B");
+  frameRate(1); // 1 passo por segundo
+}
+
+function draw() {
+  background(240);
+  textSize(16);
+  fill(0);
+
+  // desenhar arestas
+  stroke(0);
+  for (let [u,v] of edges) {
+    line(positions[u].x, positions[u].y, positions[v].x, positions[v].y);
+  }
+
+  // marcar nós visitados até o passo atual
+  visitados = new Set(ordemDFS.slice(0, passo));
+
+  // desenhar vértices
+  for (let v of vertices) {
+    let pos = positions[v];
+    fill(visitados.has(v) ? "lightgreen" : "lightblue");
+    stroke(0);
+    ellipse(pos.x, pos.y, 50, 50);
+    fill(0);
+    noStroke();
+    textAlign(CENTER, CENTER);
+    text(v, pos.x, pos.y);
+  }
+
+  // avançar passo
+  if (passo < ordemDFS.length) {
+    passo++;
+  }
+}
+
+function dfs(start, visited = new Set()) {
+  visited.add(start);
+  ordemDFS.push(start);
+  for (let [u,v] of edges) {
+    if (u === start && !visited.has(v)) dfs(v, visited);
+    if (v === start && !visited.has(u)) dfs(u, visited);
+  }
+}
+</script>
+</body>
+</html>
+
