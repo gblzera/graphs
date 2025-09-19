@@ -161,7 +161,7 @@ class ListGraph:
         odds = self.nodes_odds()
 
         if not odds:  # já é euleriano
-            return total * 2, "Já existe um circuito euleriano"
+            return total, "Já existe um circuito euleriano"
 
         # calcular distâncias mínimas entre ímpares
         dist = {u: self.dijkstra(u) for u in self.nodes}
