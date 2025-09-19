@@ -180,7 +180,7 @@ class ListGraph:
             if len(usado) == len(odds):
                 melhor = min(melhor, custo)
 
-        return total*2 + melhor, f"Circuito fechado no ponto {start}"
+        return total + melhor, f"Circuito fechado no ponto {start}"
 
 # -----------------------------
 if __name__ == "__main__":
@@ -209,12 +209,12 @@ if __name__ == "__main__":
     pontos = ['A','B','C','D','E','F']
     cpp = ListGraph(pontos)
     cpp.add_edge('A','B',100)
-    cpp.add_edge('A','C',80)
-    cpp.add_edge('B','C',120)
-    cpp.add_edge('B','D',200)
-    cpp.add_edge('C','D',100)
-    cpp.add_edge('C','E',150)
+    cpp.add_edge('A','C',120)
+    cpp.add_edge('B','C',80)
+    cpp.add_edge('B','D',150)
+    cpp.add_edge('C','E',200)
     cpp.add_edge('D','F',90)
+    cpp.add_edge('D','E',100)
     cpp.add_edge('E','F',110)
 
     cpp.print()
