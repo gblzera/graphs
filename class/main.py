@@ -119,7 +119,7 @@ class ListGraph:
                     break
             if ok:
                 return True
-            return False
+        return False
 
 if __name__ == "__main__":
     #print("=== TESTE 1: Grafo Original ===")
