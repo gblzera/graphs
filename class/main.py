@@ -4,11 +4,14 @@ class ListGraph:
     def __init__(self, nodes):
         self.nodes = nodes
         self.adj = {v: [] for v in nodes}
+        self.weights = {}
 
-    def add_edge(self, u, v):
+    def add_edge(self, u, v, weight=1):
         if v not in self.adj[u]:
             self.adj[u].append(v)
             self.adj[v].append(u)
+            self.weights[(u,v)] = weight
+            self.weights[(v,u)] = weight
 
     def remove_edge(self, u, v):
         self.adj[u] = [x for x in self.adj[u] if x != v]
@@ -27,6 +30,19 @@ class ListGraph:
         for neighbor in self.adj[start]:
             if neighbor not in visited:
                 self.dfs(neighbor, visited)
+
+    def bfs(self, start):
+        visited = []
+        queue = [start]
+
+        while queue:
+            current = queue.pop(0)
+            if current not in visited:
+                print(current, end=" ")
+                visited.append(current)
+                for neighbor in self.adj[current]:
+                    if neighbor not in visited and neighbor not in queue:
+                        queue.append(neighbor)
 
     def get_vertices(self):
         return self.nodes
@@ -120,6 +136,27 @@ class ListGraph:
             if ok:
                 return True
         return False
+    
+    def bellman_ford(self, start):
+        dist = {v: float("inf") for v in self.nodes}
+        dist[start] = 0
+
+        for _ in range(len(self.nodes) - 1):
+            for u in self.nodes:
+                for v in self.adj[u]:
+                    if (u,v) in self.weights:
+                        weight = self.weights[(u,v)]
+                        if dist[u] + weight < dist[v]:
+                            dist[v] = dist[u] + weight
+
+        for u in self.nodes:
+            for v in self.adj[u]:
+                if (u,v) in self.weights:
+                    if dist[u] + self.weights[(u,v)] < dist[v]:
+                        print("Ciclo negativo detectado!")
+                        return None
+        
+        return dist
 
 if __name__ == "__main__":
     #print("=== TESTE 1: Grafo Original ===")
@@ -155,23 +192,23 @@ if __name__ == "__main__":
     # print("Arestas:", g.get_arestas())
 
     # 7) isomorfo
-    G1 = ListGraph(["A", "B", "C"])
-    G1.add_edge("A", "B")
-    G1.add_edge("B", "C")
-    G1.add_edge("C", "A")
+    #G1 = ListGraph(["A", "B", "C"])
+    #G1.add_edge("B", "C")
+    #G1.add_edge("C", "A")
+    #G1.add_edge("A", "B")
 
-    G2 = ListGraph(["X", "Y", "Z"])
-    G2.add_edge("X", "Y")
-    G2.add_edge("Y", "Z")
-    G2.add_edge("Z", "X")
+    #G2 = ListGraph(["X", "Y", "Z"])
+    #G2.add_edge("X", "Y")
+    #G2.add_edge("Y", "Z")
+    #G2.add_edge("Z", "X")
 
-    print("\n Grafo G1")
-    G1.print()
+    #print("\n Grafo G1")
+    #G1.print()
 
-    print("\n Grafo G2")
-    G2.print()
+    #print("\n Grafo G2")
+    #G2.print()
 
-    print("\nG1 é ismorfo a G2?", G1.is_isomorfo(G2))
+    #print("\nG1 é ismorfo a G2?", G1.is_isomorfo(G2))
 
     # --- Teste subgrafo ---
 
@@ -188,3 +225,27 @@ if __name__ == "__main__":
     # print("G2 é subgrafo de G1?", G1.is_subgrafo(G2))
     # print("G2 é subgrafo gerador de G1?", G1.is_subgrafo_gerador(G2))
     # print("G2 é subgrafo induzido de G1?", G1.is_subgrafo_induzido(G2))
+
+    V = ["A", "B", "C", "D", "E"]
+    g = ListGraph(V)
+
+    # Adicionando arestas com pesos
+    g.add_edge("A", "B", 4)
+    g.add_edge("A", "C", 2)
+    g.add_edge("B", "C", 3)
+    g.add_edge("B", "D", 2)
+    g.add_edge("C", "D", 4)
+    g.add_edge("D", "E", 1)
+
+    print("Adjacência:")
+    g.print()
+
+    print("\n=== Teste BFS ===")
+    g.bfs("A")
+
+    print("\n=== Teste Bellman-Ford ===")
+    dist = g.bellman_ford("A")
+    if dist:
+        print("Distâncias mínimas a partir de A:")
+        for v, d in dist.items():
+            print(f"  {v}: {d}")
