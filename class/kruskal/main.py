@@ -1,3 +1,9 @@
+
+#codigo documentado por IA
+#feito por:
+# Gabriel Henrique Kuhn Paz - 2212082043
+# Davi Serra Bezerra - 2312130031
+
 import random
 
 class UnionFind:
@@ -53,25 +59,47 @@ def kruskal(num_nodes, edges):
 
 
 def gerar_grafo_aleatorio(num_nodes, num_edges, peso_maximo=20):
-    edges = set()
+    edges = []
     
-    # Continua gerando edges até atingir a quantidade desejada
+    # Primeiro, garante que o grafo seja conexo criando uma árvore geradora
+    nodes_disponiveis = list(range(1, num_nodes + 1))
+    random.shuffle(nodes_disponiveis)
+    
+    # Conecta os nodes um por um para formar uma árvore
+    for i in range(num_nodes - 1):
+        u = nodes_disponiveis[i]
+        v = nodes_disponiveis[i + 1]
+        peso = random.randint(1, peso_maximo)
+        edges.append((u, v, peso))
+    
+    # Agora adiciona as edges restantes aleatoriamente
+    edges_set = {(min(u, v), max(u, v)) for u, v, _ in edges}
+    
     while len(edges) < num_edges:
         u = random.randint(1, num_nodes)
         v = random.randint(1, num_nodes)
+        edge_normalizada = (min(u, v), max(u, v))
         
         # Verifica se a edge é válida (sem loops e sem duplicatas)
-        if u != v and (u, v) not in edges and (v, u) not in edges:
+        if u != v and edge_normalizada not in edges_set:
             peso = random.randint(1, peso_maximo)
-            edges.add((u, v, peso))
+            edges.append((u, v, peso))
+            edges_set.add(edge_normalizada)
     
-    return list(edges)
+    return edges
 
 
 if __name__ == "__main__":
     # Coleta as informações do usuário
-    num_nodes = int(input("Digite o número de vértices: "))
-    num_edges = int(input("Digite o número de arestas: "))
+    num_nodes = int(input("Digite o número de nodes: "))
+    num_edges = int(input("Digite o número de edges: "))
+    
+    # Valida se há edges suficientes para conectar o grafo
+    if num_edges < num_nodes - 1:
+        print(f"\n⚠️ AVISO: Com {num_edges} edges não é possível conectar {num_nodes} nodes!")
+        print(f"Mínimo necessário: {num_nodes - 1} edges")
+        print(f"Ajustando automaticamente para {num_nodes - 1} edges...\n")
+        num_edges = num_nodes - 1
     
     # Gera o grafo aleatório
     edges = gerar_grafo_aleatorio(num_nodes, num_edges)
@@ -92,6 +120,6 @@ if __name__ == "__main__":
     for origem, destino, peso in mst:
         print(f"{origem} - {destino}   (peso: {peso})")
     
-    print(f"\nPeso total da MST: {peso_total}")
-    print(f"Número de vértices na MST: {num_nodes}")
-    print(f"Número de arestas na MST: {len(mst)}")
+    print(f"\n🎯 Peso total da MST: {peso_total}")
+    print(f"📊 Número de nodes na MST: {num_nodes}")
+    print(f"📊 Número de edges na MST: {len(mst)}")
