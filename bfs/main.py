@@ -27,8 +27,8 @@ def bfs_visualizer(G, start):
     plt.show(block=True)
 
 # test
-V = ["A","B","C","D","E"]
-E = [("A","B"), ("A","C"), ("B","D"), ("C","E"), ("D","E")]
+V = ["A","B","C","D","E","F"]
+E = [("A","B"), ("A","C"), ("B","D"), ("B","E"), ("D","E"),("C","F")]
 
 G = nx.Graph()
 G.add_nodes_from(V)
