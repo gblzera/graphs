@@ -18,12 +18,12 @@ def bfs_visualizer(G, start, title_suffix=""):
 
     # --- Posições fixas para os nós (mantém layout constante durante a animação) ---
     pos = {
-        "A": (0, 1.5),
+        "A": (0, 1.5), #v1
         "B": (-1, 0.5),
         "C": (1, 0.5),
         "D": (-1.2, -0.8),
         "E": (0, -0.8),
-        "F": (1.2, -0.8)
+        "F": (1.2, -0.8) #v6
     }
 
     # --- Estruturas principais do BFS ---
