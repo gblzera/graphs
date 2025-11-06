@@ -1,8 +1,11 @@
-# --- Parceiro de Programação: Análise de Tríades (Versão Otimizada) ---
+# --- Parceiro de Programação: Análise de Tríades (Versão Correta) ---
 import networkx as nx
+import itertools # Vamos usar o 'itertools' novamente
 
 # --------------------------------------------------------------------
-# A parte de carregar os dados (que já tínhamos)
+# A parte de carregar os dados
+# COLE AQUI A SUA LISTA 'arestas_raw'
+# (Eu vou usar a minha, mas se a sua for diferente, use a sua)
 # --------------------------------------------------------------------
 arestas_raw = [
     # Preta
@@ -46,53 +49,55 @@ lista_de_arestas = list(arestas_processadas)
 # --------------------------------------------------------------------
 
 
-def analisar_rede_otimizado(lista_de_arestas):
+def encontrar_triades_corretamente(lista_de_arestas):
     """
-    Função otimizada que usa as funções 'built-in' do networkx
-    para calcular tríades abertas e fechadas.
+    Função (o nosso script manual original) que itera por todas as
+    combinações para encontrar tríades únicas. Este método é o mais seguro.
     """
     
     # --- PASSO 1: Construir o Grafo ---
     G = nx.Graph()
     G.add_edges_from(lista_de_arestas)
-    
+
     print(f"Rede carregada com sucesso.")
     print(f"Total de Pessoas (Nós): {G.number_of_nodes()}")
     print(f"Total de Conexões (Arestas): {G.number_of_edges()}")
     print("-" * 30)
 
-    # --- PASSO 2: Cálculo Otimizado ---
+    # Listas para guardar os nossos resultados
+    triades_fechadas_set = set() # Usamos 'set' para evitar duplicados
+    triades_abertas_set = set()  # (ex: A-B-C é o mesmo que B-C-A)
 
-    # 1. Tríades Fechadas (Triângulos)
-    # A função nx.triangles(G) retorna um dicionário: {nó: num_triangulos_que_ele_contém}
-    # Como cada triângulo (A,B,C) é contado 3 vezes (uma para A, uma para B, uma para C),
-    # nós somamos todos os valores e dividimos por 3.
-    triangulos_por_no = nx.triangles(G).values()
-    total_fechadas = sum(triangulos_por_no) // 3
-
-    # 2. Tríades Abertas
-    # Uma tríade (aberta ou fechada) é um "caminho de tamanho 2"
-    # (Ex: A-B-C). O nó central é 'B'.
-    # Para cada nó 'v', o número de tríades centradas nele é
-    # igual ao número de combinações de 2 vizinhos.
-    # Fórmula: (grau * (grau - 1)) / 2
-    total_triades_potenciais = 0
+    # --- PASSO 2: O "Coração" do Algoritmo ---
+    # Iteramos por CADA nó (pessoa) na rede.
     for v in G.nodes():
-        grau = G.degree(v)
-        if grau >= 2:
-            total_triades_potenciais += (grau * (grau - 1)) // 2
+        
+        vizinhos = list(G.neighbors(v))
+        if len(vizinhos) < 2:
+            continue
             
-    # As Tríades Abertas são todas as tríades potenciais
-    # MENOS as que já contámos como fechadas.
-    total_abertas = total_triades_potenciais - total_fechadas
+        # Vemos todas as combinações de 2 vizinhos
+        for u, w in itertools.combinations(vizinhos, 2):
+            
+            # 'v' é o centro. 'u' e 'w' são os vizinhos.
+            # Criamos uma chave única (frozenset) para a tríade {u, v, w}
+            chave_triade = frozenset([u, v, w])
 
-    # --- PASSO 3: Resultados ---
-    print(f"Resultados da Análise (Otimizada):")
-    print(f"\n✅ Total de TRÍADES FECHADAS (Triângulos): {total_fechadas}")
-    print(f"\n🔶 Total de TRÍADES ABERTAS: {total_abertas}")
+            if G.has_edge(u, w):
+                # TRÍADE FECHADA (TRIÂNGULO)
+                triades_fechadas_set.add(chave_triade)
+            else:
+                # TRÍADE ABERTA
+                triades_abertas_set.add(chave_triade)
+
+    # --- PASSO 3: Apresentar os Resultados ---
+    print(f"Resultados da Análise (Método Correto - 'itertools'):")
+    
+    print(f"\n✅ Total de TRÍADES FECHADAS (Triângulos): {len(triades_fechadas_set)}")
+    print(f"\n🔶 Total de TRÍADES ABERTAS: {len(triades_abertas_set)}")
     print("-" * 30)
 
 
-# --- Execução do Programa Otimizado ---
+# --- Execução do Programa ---
 # (Certifique-se de ter o 'networkx' instalado: pip install networkx)
-analisar_rede_otimizado(lista_de_arestas)
+encontrar_triades_corretamente(lista_de_arestas)
